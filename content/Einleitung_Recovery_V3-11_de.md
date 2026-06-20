@@ -58,7 +58,7 @@ reading_modes:
   full:  "Ausführlich – mit Forschung, Zitaten und Quellen"
   easy:  "Einfach – kurz und in einfacher Sprache"
   standard: "Standard – mittlere Länge, klar und persönlich"
-default_reading_mode: "standard"
+default_reading_mode: "ausführlich"
 # - full: rendert alles ausser :::easy und :::standard
 # - easy: rendert NUR :::easy-Blöcke aller Kapitel
 # - standard: rendert NUR :::standard-Blöcke (alle Kapitel haben einen)
@@ -878,7 +878,7 @@ helplines:
 :::info{type=warmth title="Bitte zuerst lesen"}
 Diese App ist ein **Prototyp**. Sie wird gerade entwickelt und ist nicht fertig.
 
-Sie dient ausschließlich dazu, ein mögliches zukünftiges Workbook im Bereich Recovery zu testen.
+Sie dient ausschliesslich dazu, ein mögliches zukünftiges Workbook im Bereich Recovery zu testen.
 :::
 
 ## Was das hier ist und was nicht
@@ -934,18 +934,18 @@ Mit dem Weiterlesen bestätigst du, dass du diese Hinweise verstanden hast und d
 :::
 
 
-# Vorspann: Recovery beginnt mit Geschichten
+# Recovery sind auch Geschichten
 {#vorspann reading_time=4}
 
 :::pull
-Recovery, das sind viele tausend Geschichten von Menschen, die trotz oder wegen ihrer Symptome einen Weg in ein gutes Leben gefunden haben.
+Recovery, das sind unzählige Geschichten von Menschen, die trotz oder wegen ihrer Symptome einen Weg in ein gutes Leben gefunden haben.
 :::
 
 Es sind Geschichten, die selten in Zeitungen stehen, weil sie keinen Skandal liefern. Geschichten, die aber jeden Tag passieren – in Buchhandlungen, an Klavieren, in Chören, in Gesprächskreisen, in Wohnzimmern, in Wartezimmern, in Küchen.
 
 Eine Frau, die lange überzeugt war, sie werde nie wieder einen Beruf ausüben, und die heute eine kleine Buchhandlung führt. Ein Vater, der nach einer Psychose wieder Klavier spielt – anders als früher, mit weniger Perfektion, mit mehr Liebe. Ein junger Mann, der nach Jahren mit einer Borderline-Diagnose Genesungsbegleiter geworden ist, weil er anderen die Hand reichen will, die ihm selbst gefehlt hat. Eine Mutter, die ihre Tochter durch eine schwere Essstörung begleitet hat und sagt: in dieser Zeit habe ich mehr über Liebe gelernt als in meinem ganzen Leben davor.
 
-Solche Geschichten gibt es nicht zu Dutzenden. Es gibt sie zu Tausenden. Wahrscheinlich zu Hunderttausenden. So viele, wie es Menschen gibt, die jemals durch eine schwere psychische Zeit gegangen sind.
+Solche Geschichten gibt es nicht zu Dutzenden. Es gibt sie zu Tausenden. Zu Hunderttausenden. So viele, wie es Menschen gibt, die jemals durch eine schwere psychische Zeit gegangen sind.
 
 ## Recovery ist dokumentiert
 

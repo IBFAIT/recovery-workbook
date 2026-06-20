@@ -368,6 +368,9 @@
             const sidebar = document.getElementById('sidebar');
             if (!ring || !pop) return;
             const STEPS = [
+                { t: 'Willkommen',           d: 'Schön, dass du da bist. Dies ist dein Recovery-Workbook — lies und probiere alles in deinem Tempo. Nichts musst du sofort verstehen.' },
+                { t: 'Ein Arbeits-Prototyp', d: 'Die App wird noch entwickelt und ersetzt keine Therapie oder Beratung. Sie hilft dir, Recovery-Themen zu erkunden — in drei Ansichten: Standard, Einfach, Ausführlich.' },
+                { t: 'Kurz zu den Symbolen', d: 'Zum Schluss zeige ich dir die wichtigsten Knöpfe oben und in der Seitenleiste. Du kannst die Tour jederzeit überspringen — der ?-Knopf öffnet sie wieder.' },
                 { sel: '#readBtn',     t: 'Auge — Lesemodus',        d: 'Blendet alles Drumherum aus und zentriert den Text. Mit Esc beendest du den Lesemodus.' },
                 { sel: '#themeBtn',    t: 'Mond — Hell / Dunkel',    d: 'Schaltet zwischen hellem und dunklem Erscheinungsbild um.' },
                 { sel: '#langBtn',     t: 'DE — Sprache',            d: 'Wechselt die Sprache von Inhalt und Navigation.' },
@@ -388,18 +391,19 @@
                     '<div class="tour-pop__arrow"></div>';
             }
             function positionPop(r) {
-                if (!r) { pop.style.left = '50%'; pop.style.top = '50%'; pop.style.transform = 'translate(-50%,-50%)'; return; }
+                const ar = pop.querySelector('.tour-pop__arrow');
+                if (!r) { pop.style.left = '50%'; pop.style.top = '50%'; pop.style.transform = 'translate(-50%,-50%)'; if (ar) ar.style.display = 'none'; return; }
+                if (ar) ar.style.display = '';
                 pop.style.transform = 'none';
                 const pw = pop.offsetWidth, ph = pop.offsetHeight, gap = 16; let below = true;
                 let top = r.bottom + gap;
                 if (top + ph > window.innerHeight - 8) { top = r.top - gap - ph; below = false; }
                 let left = Math.max(8, Math.min(r.left + r.width / 2 - pw / 2, window.innerWidth - pw - 8));
                 pop.style.left = left + 'px'; pop.style.top = Math.max(8, top) + 'px';
-                const ar = pop.querySelector('.tour-pop__arrow');
                 if (ar) { ar.style.left = Math.max(12, Math.min(r.left + r.width / 2 - left - 7, pw - 26)) + 'px'; ar.style.top = below ? '-7px' : (ph - 7) + 'px'; ar.style.transform = below ? 'rotate(45deg)' : 'rotate(225deg)'; }
             }
             function place() {
-                const el = document.querySelector(STEPS[i].sel);
+                const el = STEPS[i].sel ? document.querySelector(STEPS[i].sel) : null;
                 const r = el ? el.getBoundingClientRect() : null;
                 const ok = !!r && r.width > 0 && r.height > 0;
                 ring.hidden = !ok;
@@ -408,7 +412,7 @@
             }
             function render() {
                 pop.innerHTML = panelHTML();
-                const el = document.querySelector(STEPS[i].sel);
+                const el = STEPS[i].sel ? document.querySelector(STEPS[i].sel) : null;
                 let opened = false;
                 if (sidebar && window.innerWidth < 900) {   // Sidebar-Ziele brauchen den offenen Drawer
                     const inSb = el && el.closest('.sidebar');
