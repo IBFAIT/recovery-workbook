@@ -113,7 +113,7 @@
         });
         side += '</nav>';
         side += '<div class="sidebar__footer">' +
-            '<button type="button" class="icon-btn" aria-label="Suche (in Arbeit)" title="In Arbeit" disabled>' + uiSvg('search') + '</button>' +
+            '<button type="button" class="icon-btn" id="searchBtn" aria-label="Suche (in Arbeit)" title="In Arbeit" disabled>' + uiSvg('search') + '</button>' +
             '<button type="button" class="icon-btn" id="settingsBtn" aria-haspopup="dialog" aria-label="Einstellungen" title="Einstellungen">' + uiSvg('settings') + '</button>' +
             '<button type="button" class="icon-btn" id="helpBtn" aria-haspopup="dialog" aria-label="Hilfe & Überblick" title="Hilfe & Überblick">' + uiSvg('help') + '</button>' +
             '</div>';
@@ -150,19 +150,8 @@
         const layer = document.createElement('div'); layer.className = 'modal-layer';
         layer.innerHTML =
             '<div class="modal-scrim" id="modalScrim" hidden></div>' +
-            '<div class="modal-card ob-card" id="onboardCard" role="dialog" aria-modal="true" aria-labelledby="obTitle" aria-describedby="obLead" hidden>' +
-                '<button type="button" class="icon-btn modal-card__close" id="obClose" aria-label="Schliessen">' + X + '</button>' +
-                '<p class="modal-eyebrow">Kurz zur Orientierung</p>' +
-                '<h2 id="obTitle">Willkommen</h2>' +
-                '<p class="modal-lead" id="obLead">Dies ist ein Arbeits-Prototyp deines Recovery-Workbooks. Lies alles in deinem Tempo — nichts musst du sofort verstehen. Hier ein ruhiger Überblick, was die Knöpfe tun.</p>' +
-                '<p class="ob-section-label">Die Symbole</p>' +
-                '<ul class="ob-legend" id="obLegend"></ul>' +
-                '<div class="ob-status">' +
-                    '<p><b>Schon nutzbar:</b> Lesen in drei Ansichten (Standard · Einfach · Ausführlich), hell/dunkel, Sprache wechseln, ablenkungsfreier Lesemodus, Einstellungen, Reflexionen (lokal gespeichert).</p>' +
-                    '<p><b>Noch in Arbeit:</b> Suche und einzelne Menüpunkte (als «in Arbeit» markiert). Manche Seiten sind Platzhalter.</p>' +
-                '</div>' +
-                '<div class="modal-actions"><button type="button" class="btn btn--ghost" id="obSkip">Später</button><button type="button" class="btn" id="obDone" data-autofocus>Verstanden</button></div>' +
-            '</div>' +
+            '<div class="tour-ring" id="tourRing" hidden></div>' +
+            '<div class="tour-pop" id="tourPop" role="dialog" aria-modal="false" aria-live="polite" aria-label="Kurz-Tour" hidden></div>' +
             '<div class="modal-card" id="settingsCard" role="dialog" aria-modal="true" aria-labelledby="setTitle" hidden>' +
                 '<button type="button" class="icon-btn modal-card__close" id="setClose" aria-label="Schliessen">' + X + '</button>' +
                 '<p class="modal-eyebrow">Nur auf diesem Gerät</p>' +
@@ -333,10 +322,9 @@
     /* ===== 2b · Modale: Onboarding/Hilfe (rcz-onboarded) + Einstellungen ===== */
     (function modals() {
         const mscrim = document.getElementById('modalScrim');
-        const onboard = document.getElementById('onboardCard');
         const settings = document.getElementById('settingsCard');
         const appEl = document.querySelector('.app');
-        if (!mscrim || !onboard || !settings) return;
+        if (!mscrim || !settings) return;
 
         let openCard = null, lastFocus = null;
         const reduce = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -364,7 +352,6 @@
         function closeModal() {
             if (!openCard) return;
             const card = openCard; openCard = null;
-            if (card.id === 'onboardCard') { try { localStorage.setItem('rcz-onboarded', '1'); } catch (e) {} }
             mscrim.classList.remove('show'); card.classList.remove('show');
             document.removeEventListener('keydown', onKey, true);
             if (appEl) appEl.removeAttribute('aria-hidden');
@@ -374,25 +361,97 @@
         }
         mscrim.addEventListener('click', closeModal);
 
-        /* --- Onboarding / Hilfe --- */
-        const LEGEND = [
-            { svg: uiSvg('eye'),      t: 'Auge — Lesemodus',        d: 'Blendet alles Drumherum aus und zentriert den Text. Mit Esc oder dem Kreuz beenden.' },
-            { svg: uiSvg('moon'),     t: 'Mond — Hell / Dunkel',    d: 'Schaltet zwischen hellem und dunklem Erscheinungsbild.' },
-            { svg: '<span class="ob-de">DE</span>', t: 'DE — Sprache', d: 'Wechselt die Sprache von Inhalt und Navigation.' },
-            { svg: uiSvg('search'),   t: 'Lupe — Suche',            d: 'Findet Inhalte.', soon: true },
-            { svg: uiSvg('settings'), t: 'Zahnrad — Einstellungen', d: 'Erscheinungsbild und «Meine Daten löschen».' },
-            { svg: uiSvg('help'),     t: '? — Hilfe',               d: 'Öffnet diese Übersicht jederzeit erneut.' }
-        ];
-        const ul = document.getElementById('obLegend');
-        if (ul) ul.innerHTML = LEGEND.map((it) =>
-            '<li><span class="ob-ico">' + it.svg + '</span><span><b>' + it.t + '</b><span>' + it.d +
-            (it.soon ? ' <span class="soon">— noch in Arbeit</span>' : '') + '</span></span></li>').join('');
+        /* --- Onboarding/Hilfe: schrittweise Tour (Variante B – Leucht-Ring + Anker-Tooltip) --- */
+        (function tour() {
+            const ring = document.getElementById('tourRing');
+            const pop = document.getElementById('tourPop');
+            const sidebar = document.getElementById('sidebar');
+            if (!ring || !pop) return;
+            const STEPS = [
+                { sel: '#readBtn',     t: 'Auge — Lesemodus',        d: 'Blendet alles Drumherum aus und zentriert den Text. Mit Esc beendest du den Lesemodus.' },
+                { sel: '#themeBtn',    t: 'Mond — Hell / Dunkel',    d: 'Schaltet zwischen hellem und dunklem Erscheinungsbild um.' },
+                { sel: '#langBtn',     t: 'DE — Sprache',            d: 'Wechselt die Sprache von Inhalt und Navigation.' },
+                { sel: '#searchBtn',   t: 'Lupe — Suche',            d: 'Findet Inhalte in der App — diese Funktion ist noch in Arbeit.' },
+                { sel: '#settingsBtn', t: 'Zahnrad — Einstellungen', d: 'Erscheinungsbild wählen und «Meine Daten löschen».' },
+                { sel: '#helpBtn',     t: 'Fragezeichen — Hilfe',    d: 'Öffnet diese Tour jederzeit wieder. Du kannst hier immer nachsehen.' }
+            ];
+            let i = 0, on = false, lastF = null;
+            const seen = () => { try { return localStorage.getItem('rcz-onboarded') === '1'; } catch (e) { return false; } };
 
-        const seen = () => { try { return localStorage.getItem('rcz-onboarded') === '1'; } catch (e) { return false; } };
-        const helpBtn = document.getElementById('helpBtn');
-        if (helpBtn) helpBtn.addEventListener('click', () => openModal(onboard));
-        ['obDone', 'obSkip', 'obClose'].forEach((id) => { const b = document.getElementById(id); if (b) b.addEventListener('click', closeModal); });
-        if (!seen()) openModal(onboard);   // First-Run: einmal automatisch
+            function panelHTML() {
+                const n = STEPS.length, s = STEPS[i];
+                return '<span class="tour-count">Schritt ' + (i + 1) + ' / ' + n + '</span>' +
+                    '<h3>' + s.t + '</h3><p>' + s.d + '</p>' +
+                    '<div class="tour-actions"><button type="button" class="tour-link" data-tour="skip">Überspringen</button>' +
+                    '<span class="tour-nav"><button type="button" class="btn btn--ghost" data-tour="prev"' + (i === 0 ? ' disabled' : '') + '>Zurück</button>' +
+                    '<button type="button" class="btn" data-tour="next" data-autofocus>' + (i === n - 1 ? 'Fertig' : 'Weiter') + '</button></span></div>' +
+                    '<div class="tour-pop__arrow"></div>';
+            }
+            function positionPop(r) {
+                if (!r) { pop.style.left = '50%'; pop.style.top = '50%'; pop.style.transform = 'translate(-50%,-50%)'; return; }
+                pop.style.transform = 'none';
+                const pw = pop.offsetWidth, ph = pop.offsetHeight, gap = 16; let below = true;
+                let top = r.bottom + gap;
+                if (top + ph > window.innerHeight - 8) { top = r.top - gap - ph; below = false; }
+                let left = Math.max(8, Math.min(r.left + r.width / 2 - pw / 2, window.innerWidth - pw - 8));
+                pop.style.left = left + 'px'; pop.style.top = Math.max(8, top) + 'px';
+                const ar = pop.querySelector('.tour-pop__arrow');
+                if (ar) { ar.style.left = Math.max(12, Math.min(r.left + r.width / 2 - left - 7, pw - 26)) + 'px'; ar.style.top = below ? '-7px' : (ph - 7) + 'px'; ar.style.transform = below ? 'rotate(45deg)' : 'rotate(225deg)'; }
+            }
+            function place() {
+                const el = document.querySelector(STEPS[i].sel);
+                const r = el ? el.getBoundingClientRect() : null;
+                const ok = !!r && r.width > 0 && r.height > 0;
+                ring.hidden = !ok;
+                if (ok) { ring.style.left = (r.left - 5) + 'px'; ring.style.top = (r.top - 5) + 'px'; ring.style.width = (r.width + 10) + 'px'; ring.style.height = (r.height + 10) + 'px'; ring.classList.toggle('pulse', !reduce()); }
+                positionPop(ok ? r : null);
+            }
+            function render() {
+                pop.innerHTML = panelHTML();
+                const el = document.querySelector(STEPS[i].sel);
+                let opened = false;
+                if (sidebar && window.innerWidth < 900) {   // Sidebar-Ziele brauchen den offenen Drawer
+                    const inSb = el && el.closest('.sidebar');
+                    if (inSb && !sidebar.classList.contains('open')) { sidebar.classList.add('open'); opened = true; }
+                    else if (!inSb && sidebar.classList.contains('open')) { sidebar.classList.remove('open'); }
+                }
+                place();
+                if (opened) window.setTimeout(place, 60);
+                const f = pop.querySelector('[data-autofocus]'); if (f) f.focus();
+            }
+            function go(n) { if (n >= STEPS.length) { end(); return; } i = Math.max(0, n); render(); }
+            function onKey(e) {
+                if (!on) return;
+                if (e.key === 'Escape') { e.preventDefault(); end(); }
+                else if (e.key === 'ArrowRight') { e.preventDefault(); go(i + 1); }
+                else if (e.key === 'ArrowLeft') { e.preventDefault(); go(i - 1); }
+            }
+            function start() {
+                if (on) return; on = true; i = 0; lastF = document.activeElement;
+                document.body.classList.add('tour-running'); pop.hidden = false;
+                document.addEventListener('keydown', onKey, true);
+                window.addEventListener('resize', place); window.addEventListener('scroll', place, true);
+                render();
+            }
+            function end() {
+                if (!on) return; on = false;
+                try { localStorage.setItem('rcz-onboarded', '1'); } catch (e) {}
+                ring.hidden = true; pop.hidden = true; ring.classList.remove('pulse');
+                if (sidebar) sidebar.classList.remove('open');
+                document.body.classList.remove('tour-running');
+                document.removeEventListener('keydown', onKey, true);
+                window.removeEventListener('resize', place); window.removeEventListener('scroll', place, true);
+                if (lastF && lastF.focus) lastF.focus();
+            }
+            pop.addEventListener('click', (e) => {
+                const b = e.target.closest('[data-tour]'); if (!b) return;
+                const a = b.getAttribute('data-tour');
+                if (a === 'next') go(i + 1); else if (a === 'prev') go(i - 1); else end();
+            });
+            const helpBtn = document.getElementById('helpBtn');
+            if (helpBtn) helpBtn.addEventListener('click', start);
+            if (!seen()) start();   // First-Run: einmal automatisch
+        })();
 
         /* --- Einstellungen --- */
         const settingsBtn = document.getElementById('settingsBtn');
