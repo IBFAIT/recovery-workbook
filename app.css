@@ -107,6 +107,7 @@
     /* --- Maße & Layout ----------------------------------------------------- */
     --rule-w:        1px;
     --topbar-h:      52px;
+    --control-h:     40px;      /* einheitliche Höhe tippbarer Buttons */
     --sidebar-w:     264px;     /* Sidebar-Breite (Desktop)            */
     --reading-max:   42rem;     /* Lesespalte: ~724px, ~72 Zeichen     */
     --content-max:   66rem;     /* breite Variante für Tools/Übersicht */
@@ -992,7 +993,8 @@ body.reading .prose { margin-inline: auto; }   /* Lesespalte zentriert */
     font-family: var(--font-ui); font-size: .95rem; letter-spacing: var(--track-ui);
     color: var(--meta);
 }
-.field textarea, .field input[type="text"] {
+/* Gemeinsame Eingabe-Basis: ein Stil für alle Textfelder/Textareas (inkl. Reflexion) */
+.field textarea, .field input[type="text"], .reflection textarea {
     width: 100%; box-sizing: border-box;
     font-family: var(--font-read); font-size: 1.2rem; line-height: 1.6;
     padding: .7rem .9rem;
@@ -1000,16 +1002,16 @@ body.reading .prose { margin-inline: auto; }   /* Lesespalte zentriert */
     background: var(--bg); color: inherit;
     resize: vertical;
 }
-.field textarea:focus, .field input[type="text"]:focus {
+.field textarea:focus, .field input[type="text"]:focus, .reflection textarea:focus {
     outline: none; border-color: var(--accent);
     box-shadow: 0 0 0 3px var(--accent-bg);
 }
 
 /* 6.8 · Buttons */
 .btn {
-    display: inline-flex; align-items: center; gap: .4rem;
-    font-family: var(--font-ui); font-size: 1rem; letter-spacing: var(--track-ui);
-    padding: .55rem 1.2rem;
+    display: inline-flex; align-items: center; justify-content: center; gap: .4rem;
+    font-family: var(--font-ui); font-size: 1rem; line-height: 1.2; letter-spacing: var(--track-ui);
+    min-height: var(--control-h); padding: .35rem .9rem;   /* kompakt, Schrift unverändert */
     border: 1px solid var(--accent); border-radius: var(--radius);
     background: var(--accent); color: var(--bg);
     cursor: pointer; text-decoration: none;
@@ -1017,6 +1019,11 @@ body.reading .prose { margin-inline: auto; }   /* Lesespalte zentriert */
 .btn:hover { background: color-mix(in srgb, var(--accent) 85%, #000); }
 .btn--ghost { background: transparent; color: var(--accent-text); }
 .btn--ghost:hover { background: var(--accent-bg); }
+
+/* Einheitlicher Deaktiviert-Zustand für Aktions-Buttons (.icon-btn hat eigene Regel) */
+.btn:disabled, .quiz-check:disabled, .quiz-opt:disabled, .seg button:disabled, .mode-cycle:disabled {
+    opacity: .45; cursor: not-allowed;
+}
 
 /* Bestätigungs-Status neben Buttons (z. B. „Gespeichert ✓") */
 .save-status {
@@ -1131,14 +1138,6 @@ body.reading .prose { margin-inline: auto; }   /* Lesespalte zentriert */
 .reflection__intro { font-style: italic; color: var(--meta); margin: .2rem 0 .8rem; }
 .reflection__item { margin: 1rem 0; }
 .reflection__q { font-family: var(--font-read); margin: 0 0 .4rem; }
-.reflection textarea {
-    width: 100%; box-sizing: border-box; min-height: 3.2rem;
-    font-family: var(--font-read); font-size: 1.1rem; line-height: 1.5;
-    padding: .5rem .7rem;
-    border: 1px solid var(--meta); border-radius: var(--radius);
-    background: var(--bg); color: inherit; resize: vertical;
-}
-.reflection textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-bg); }
 .reflection__note { font-family: var(--font-ui); font-size: .85rem; color: var(--meta); margin-top: .7rem; }
 
 /* 8.7 · Krise / Notruf */
@@ -1202,8 +1201,9 @@ body.reading .prose { margin-inline: auto; }   /* Lesespalte zentriert */
 .quiz-q__q { font-family: var(--font-read); font-size: 1.15rem; line-height: 1.4; padding: 0; margin: 0 0 .7rem; }
 .quiz-opts { display: flex; flex-direction: column; gap: .5rem; }
 .quiz-opt {
-    font-family: var(--font-ui); font-size: 1.05rem; text-align: left;
-    padding: .6rem .9rem;
+    display: flex; align-items: center;
+    font-family: var(--font-ui); font-size: 1.05rem; line-height: 1.3; text-align: left;
+    min-height: var(--control-h); padding: .4rem .85rem;
     border: 1px solid var(--rule); border-radius: var(--radius);
     background: var(--bg); color: var(--text); cursor: pointer;
 }
@@ -1214,8 +1214,9 @@ body.reading .prose { margin-inline: auto; }   /* Lesespalte zentriert */
 .quiz-opt.is-wrong { border-color: #b06a4f; background: color-mix(in srgb, #b06a4f 16%, transparent); }
 .quiz-check {
     align-self: flex-start; margin-top: .7rem;
-    font-family: var(--font-ui); font-size: 1rem; letter-spacing: var(--track-ui);
-    padding: .45rem 1.1rem; border: 1px solid var(--accent); border-radius: 999px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: var(--font-ui); font-size: 1rem; line-height: 1.2; letter-spacing: var(--track-ui);
+    min-height: var(--control-h); padding: .35rem 1rem; border: 1px solid var(--accent); border-radius: var(--radius);
     background: var(--accent); color: var(--bg); cursor: pointer;
 }
 .quiz-feedback { margin: .8rem 0 0; font-family: var(--font-ui); font-size: 1rem; font-style: italic; color: var(--meta); }
@@ -1346,11 +1347,13 @@ body.reading .prose { margin-inline: auto; }   /* Lesespalte zentriert */
 /* Einstellungen */
 .seg { display: inline-flex; border: 1px solid var(--rule); border-radius: var(--radius); overflow: hidden; }
 .seg button {
-    font-family: var(--font-ui); font-size: .95rem; padding: .45rem .9rem;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: var(--font-ui); font-size: .95rem; line-height: 1.2;
+    min-height: var(--control-h); padding: .35rem .85rem;
     background: var(--bg); color: var(--text); border: 0; border-right: 1px solid var(--rule); cursor: pointer;
 }
 .seg button:last-child { border-right: 0; }
-.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-text); }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--bg); }   /* weisser Text auf Petrol (wie .btn) – Kontrast ~5.6:1 statt 1.3:1 */
 .settings-hint { font-family: var(--font-ui); font-size: .92rem; line-height: 1.5; color: var(--meta); margin: 0 0 .7rem; }
 .settings-danger { display: flex; flex-direction: column; gap: .7rem; align-items: flex-start; }
 .settings-confirm { display: flex; flex-direction: column; gap: .5rem; font-family: var(--font-ui); font-size: .95rem; }
