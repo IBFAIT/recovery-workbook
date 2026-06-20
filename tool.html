@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Belastungsskala · RCZ App</title>
+    <link rel="stylesheet" href="app.css?v=3.25"/>
+    <script>try{var t=localStorage.getItem('rcz-theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
+</head>
+<body data-nav="tools" data-crumb="Übungen &amp; Tools|Belastungsskala">
+
+<a class="skip-link" href="#main">Zum Inhalt springen</a>
+
+<main class="content" id="main">
+    <div class="page">
+        <h1>Belastung einschätzen</h1>
+        <p class="subtitle">Eine kurze Standortbestimmung</p>
+        <p class="page__intro">Nimm dir einen Moment. Wo stehst du gerade? Es gibt kein richtig oder falsch – nur deinen Eindruck im Augenblick.</p>
+
+        <div class="exercise">
+            <div class="exercise__grid">
+                <div class="scale">
+                    <p class="exercise__q">Wie stark fühlst du dich gerade belastet?</p>
+                    <div class="readout">
+                        <span class="readout__value" id="val">5</span>
+                        <span class="readout__label" id="lab">mittel</span>
+                    </div>
+                    <input type="range" min="0" max="10" value="5" id="slider" aria-label="Belastung von 0 bis 10"/>
+                    <div class="scale__labels"><span>0 · ruhig</span><span>10 · sehr belastet</span></div>
+                </div>
+
+                <div class="field-col">
+                    <div class="field">
+                        <label for="note">Was trägt gerade dazu bei?</label>
+                        <textarea id="note" rows="4" placeholder="Optionale Notiz – nur für dich."></textarea>
+                    </div>
+                    <button type="button" class="btn" id="saveBtn">Eintrag speichern</button>
+                    <span class="save-status" role="status" aria-live="polite"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script src="app.js?v=3.25"></script>
+<script>
+(function () {
+    // Belastungsskala (seiten-spezifisch)
+    const slider = document.getElementById('slider');
+    const val = document.getElementById('val');
+    const lab = document.getElementById('lab');
+    const labels = ['ganz ruhig', 'ruhig', 'ruhig', 'leicht angespannt', 'leicht angespannt',
+                    'mittel', 'mittel', 'spürbar belastet', 'stark belastet', 'sehr belastet', 'sehr belastet'];
+    function update() {
+        val.textContent = slider.value;
+        lab.textContent = labels[+slider.value];
+        slider.setAttribute('aria-valuetext', slider.value + ' – ' + labels[+slider.value]);
+    }
+    slider.addEventListener('input', update);
+    update();
+
+    // Speichern-Bestätigung (Prototyp: kein echter Speicher-Backend)
+    const saveBtn = document.getElementById('saveBtn');
+    const saveStatus = document.querySelector('.save-status');
+    if (saveBtn && saveStatus) {
+        saveBtn.addEventListener('click', () => { saveStatus.textContent = 'Gespeichert ✓'; });
+    }
+})();
+</script>
+</body>
+</html>

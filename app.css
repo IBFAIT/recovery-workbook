@@ -1,0 +1,1363 @@
+/* ==========================================================================
+   rcz-app · app.css
+   --------------------------------------------------------------------------
+   Design-System & Layout der Recovery-College-App.
+
+   Aufbau
+     1 · Schriften          – @import / @font-face
+     2 · Design-Tokens      – Farben, Schriftfamilien, Typo-Skala, Maße
+     3 · Reset & Basis      – Dokument-Grundlagen
+     4 · Typografie         – Überschriften, Fließtext, Auszeichnungen, Listen
+     5 · App-Shell          – Sidebar, Drawer, Topbar, Inhaltsbereich
+     6 · Hilfsklassen       – Utilities
+
+   Basis-Maß: 1rem = 17.25px (auf <html>). Alle Schriftgrade sind davon
+   abgeleitet und decken sich mit typografie.html / site.css.
+   Aufbau-Logik: mobile-first – Grundregeln gelten für kleine Screens,
+   Media-Queries skalieren nach oben (>= 900px = Desktop mit fester Sidebar).
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1 · Schriften
+   ========================================================================== */
+
+/* Playfair Display – Display-Schrift für H1–H3 */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap');
+
+/* ET Book – Fließtext (Edward Tufte CDN) */
+@font-face {
+    font-family: "et-book";
+    src: url("https://cdn.jsdelivr.net/gh/edwardtufte/tufte-css@master/et-book/et-book-roman-line-figures/et-book-roman-line-figures.woff") format("woff");
+    font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+    font-family: "et-book";
+    src: url("https://cdn.jsdelivr.net/gh/edwardtufte/tufte-css@master/et-book/et-book-display-italic-old-style-figures/et-book-display-italic-old-style-figures.woff") format("woff");
+    font-weight: 400; font-style: italic; font-display: swap;
+}
+@font-face {
+    font-family: "et-book";
+    src: url("https://cdn.jsdelivr.net/gh/edwardtufte/tufte-css@master/et-book/et-book-bold-line-figures/et-book-bold-line-figures.woff") format("woff");
+    font-weight: 700; font-style: normal; font-display: swap;
+}
+/* ET Book mit Mediäval-Ziffern – volle Familie (Lauftext via --font-read / .oldstyle).
+   700 nutzt den Bold-Schnitt (nur Versal-Ziffern verfügbar), kursiv den Old-Style-Italic. */
+@font-face {
+    font-family: "et-book-roman-old-style";
+    src: url("https://cdn.jsdelivr.net/gh/edwardtufte/tufte-css@master/et-book/et-book-roman-old-style-figures/et-book-roman-old-style-figures.woff") format("woff");
+    font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+    font-family: "et-book-roman-old-style";
+    src: url("https://cdn.jsdelivr.net/gh/edwardtufte/tufte-css@master/et-book/et-book-bold-line-figures/et-book-bold-line-figures.woff") format("woff");
+    font-weight: 700; font-style: normal; font-display: swap;
+}
+@font-face {
+    font-family: "et-book-roman-old-style";
+    src: url("https://cdn.jsdelivr.net/gh/edwardtufte/tufte-css@master/et-book/et-book-display-italic-old-style-figures/et-book-display-italic-old-style-figures.woff") format("woff");
+    font-weight: 400; font-style: italic; font-display: swap;
+}
+
+
+/* ==========================================================================
+   2 · Design-Tokens
+   ========================================================================== */
+:root {
+    /* --- Farben ------------------------------------------------------------ */
+    --bg:        #fffff8;   /* Papierweiß, Inhalts-Hintergrund */
+    --bg-soft:   #f5f1e4;   /* Cream, Sidebar / weiche Flächen */
+    --bg-sink:   #efe9d8;   /* etwas tiefer, Hover in Sidebar  */
+    --text:      #111;      /* Haupttext                       */
+    --meta:      #555;      /* Labels, Untertitel, Hilfstext   */
+    --rule:      #d8cfae;   /* feine Trennlinien               */
+    --accent:    #3F6F77;   /* Petrol, Akzent / aktiv          */
+    --accent-bg: #e7eef0;   /* heller Petrol-Hintergrund       */
+    --highlight: #fbeec2;   /* warmer Gold-Ton für <mark>      */
+    --accent-text: #355f66; /* dunkleres Petrol für kleinen Akzent-Text (AAA, D2) */
+
+    /* --- Schriftfamilien --------------------------------------------------- */
+    --font-body:    "et-book", Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif;
+    --font-read:    "et-book-roman-old-style", "et-book", Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif;  /* Lauftext, Mediäval-Ziffern */
+    --font-display: "Playfair Display", Georgia, "Times New Roman", serif;
+    --font-ui:      "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+    --font-mono:    Consolas, "Liberation Mono", Menlo, Courier, monospace;
+
+    /* --- Typo-Skala · Schriftgrade (1rem = 17.25px) ------------------------ */
+    --fs-h1:    2.38rem;    /* ~41 px · Seiten-Titel        */
+    --fs-h2:    1.8rem;     /* ~31 px · Abschnitt           */
+    --fs-h3:    1.5rem;     /* ~26 px · Unter-Abschnitt     */
+    --fs-h4:    1.25rem;    /* ~22 px · Hinweis / Untertitel*/
+    --fs-body:  1.26rem;    /* ~22 px · Fließtext           */
+    --fs-ui:    1.1rem;     /* ~19 px · Navigation          */
+    --fs-small: 1rem;       /* ~17 px · Labels, Crumbs, Code*/
+    --fs-micro: .82rem;     /* ~14 px · Gruppen-Label       */
+
+    /* --- Typo-Skala · Zeilenhöhen ------------------------------------------ */
+    --lh-h1:    1.1;
+    --lh-h2:    1.15;
+    --lh-h3:    1.2;
+    --lh-h4:    1.4;
+    --lh-body:  1.9rem;     /* ~33 px · fester Grundrhythmus (etwas luftiger, D1) */
+
+    /* --- Laufweite (letter-spacing) ---------------------------------------- */
+    --track-ui: .03em;      /* Gill-Sans-Flächen            */
+    --track-h1: -.005em;
+
+    /* --- Maße & Layout ----------------------------------------------------- */
+    --rule-w:        1px;
+    --topbar-h:      52px;
+    --sidebar-w:     264px;     /* Sidebar-Breite (Desktop)            */
+    --reading-max:   42rem;     /* Lesespalte: ~724px, ~72 Zeichen     */
+    --content-max:   66rem;     /* breite Variante für Tools/Übersicht */
+    --radius:        6px;
+    --gap:           clamp(1.5rem, 4vw, 3rem);  /* Innenabstand Inhalt */
+}
+
+/* Dark Mode – folgt dem System, lässt sich aber per [data-theme] erzwingen:
+   data-theme="dark"  → immer dunkel
+   data-theme="light" → immer hell (überstimmt System-Dunkelmodus)
+   ohne Attribut      → folgt prefers-color-scheme */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --bg:        #151515;
+        --bg-soft:   #1d1d1d;
+        --bg-sink:   #262626;
+        --text:      #e6e6e6;
+        --meta:      #a6a6a6;
+        --rule:      #3a3a3a;
+        --accent:    #8fbcc4;
+        --accent-bg: #20292b;
+        --highlight: #4a3f1a;
+        --accent-text: #8fbcc4;
+    }
+}
+:root[data-theme="dark"] {
+    --bg:        #151515;
+    --bg-soft:   #1d1d1d;
+    --bg-sink:   #262626;
+    --text:      #e6e6e6;
+    --meta:      #a6a6a6;
+    --rule:      #3a3a3a;
+    --accent:    #8fbcc4;
+    --accent-bg: #20292b;
+    --highlight: #4a3f1a;
+    --accent-text: #8fbcc4;
+}
+
+
+/* ==========================================================================
+   3 · Reset & Dokument-Basis
+   --------------------------------------------------------------------------
+   font-size wird ausschließlich auf <html> gesetzt (1rem-Basis). Niemals
+   erneut auf <html>, sonst löst rem gegen den Browser-Default (16px) auf
+   und die ganze Skala verschiebt sich.
+   ========================================================================== */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+    font-size: 17.25px;
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    font-weight: 400;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+img, svg { display: block; max-width: 100%; }
+button { font: inherit; }
+
+
+/* ==========================================================================
+   4 · Typografie
+   ========================================================================== */
+
+/* 4.1 · Überschriften – Playfair Display (H1–H3), Gill Sans (H4–H6) */
+h1, h2, h3 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-style: normal;
+    color: var(--text);
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    overflow-wrap: break-word;
+}
+h1 {
+    font-size: var(--fs-h1);
+    line-height: var(--lh-h1);
+    letter-spacing: var(--track-h1);
+    margin: 0 0 1.28rem;
+}
+h2 {
+    font-size: var(--fs-h2);
+    line-height: var(--lh-h2);
+    margin: 1.79rem 0 1.19rem;
+}
+h3 {
+    font-size: var(--fs-h3);
+    line-height: var(--lh-h3);
+    margin: 1.7rem 0 .89rem;
+}
+h4, h5, h6 {
+    font-family: var(--font-ui);
+    font-weight: 400;
+    font-style: normal;
+    line-height: var(--lh-h4);
+}
+h4 { font-size: var(--fs-h4); margin: 1.6rem 0 .6rem; }
+h5, h6 { font-size: var(--fs-small); margin: 1.4rem 0 .4rem; color: var(--meta); }
+
+/* 4.2 · Untertitel */
+.subtitle {
+    font-family: var(--font-ui);
+    font-weight: 400;
+    font-size: var(--fs-h4);
+    line-height: 1.2;
+    color: var(--meta);
+    margin: 0 0 1.4rem;
+}
+
+/* 4.3 · Fließtext */
+p {
+    margin: 0 0 1rem;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    overflow-wrap: break-word;
+}
+
+/* 4.4 · Auszeichnungen */
+em       { font-style: italic; }
+strong   { font-weight: 700; }
+a {
+    color: inherit;
+    text-decoration-thickness: 1px;
+    text-underline-offset: .12em;
+}
+code, kbd, samp, pre {
+    font-family: var(--font-mono);
+    font-size: var(--fs-small);
+}
+mark {
+    background: var(--highlight);
+    color: inherit;
+    padding: 0 .15em;
+    border-radius: 2px;
+}
+kbd {
+    font-size: .85em;
+    line-height: 1;
+    padding: .12em .45em;
+    border: 1px solid var(--rule);
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    background: var(--bg-soft);
+    white-space: nowrap;
+}
+abbr[title] {
+    text-decoration: underline dotted;
+    text-underline-offset: .15em;
+    cursor: help;
+}
+.sans {                                   /* Sans-Serif-Stelle im Fließtext */
+    font-family: var(--font-ui);
+    font-size: .94em;                     /* Gill Sans hat größere x-Höhe → optisch ausgleichen */
+}
+
+/* Zahlen & Kapitälchen */
+.caps      { text-transform: uppercase; letter-spacing: .07em; }   /* Versalien brauchen Laufweite */
+.smallcaps { font-variant: small-caps;  letter-spacing: .03em; }   /* Kapitälchen */
+.oldstyle  { font-family: var(--font-read); }                      /* Mediäval-Ziffern erzwingen */
+.lining    { font-family: var(--font-body); }                      /* Versal-Ziffern erzwingen (Tabellen, UI) */
+
+/* 4.5 · Listen – kein Einzug, Folgezeilen fluchten mit der ersten (Tufte-Stil) */
+.prose ul, .prose ol {
+    list-style: none;
+    padding-left: 0;
+    margin: 1.4rem 0;
+}
+.prose li { margin: .55rem 0; }
+
+/* Ungeordnet: Gedankenstrich-Marker */
+.prose ul > li {
+    padding-left: 1.2em;
+    text-indent: -1.2em;
+}
+.prose ul > li::before {
+    content: "–";
+    display: inline-block;
+    width: 1.2em;
+    text-indent: 0;
+    color: var(--meta);
+}
+
+/* Geordnet: sichtbare Nummern (Mediäval-Ziffern, rechtsbündig) */
+.prose ol { counter-reset: ol-item; }
+.prose ol > li {
+    padding-left: 1.9em;
+    text-indent: -1.9em;
+}
+.prose ol > li::before {
+    counter-increment: ol-item;
+    content: counter(ol-item) ".";
+    display: inline-block;
+    width: 1.5em;
+    margin-right: .4em;
+    text-indent: 0;
+    text-align: right;
+    color: var(--meta);
+}
+
+/* Definitions-Liste */
+.prose dl { margin: 1.4rem 0; }
+.prose dt { font-style: italic; color: var(--meta); margin-top: 1.2rem; }
+.prose dd { margin: .2rem 0 0; }
+
+/* 4.6 · Zitate – ruhig, kursiv, mit Quellenzeile (kein schwerer Rahmen) */
+.prose blockquote {
+    margin: 1.6rem 0;
+    font-style: italic;
+    font-size: 1.35rem;
+    line-height: 1.55;
+    color: var(--text);
+}
+.prose blockquote > p { margin: 0; }
+.prose blockquote cite {
+    display: block;
+    margin-top: .5rem;
+    font-style: normal;
+    font-family: var(--font-ui);
+    font-size: 1.02rem;
+    letter-spacing: var(--track-ui);
+    color: var(--meta);
+}
+.prose blockquote cite::before { content: "— "; }
+
+/* 4.7 · Code-Block */
+.prose pre {
+    margin: 1.4rem 0;
+    padding: .9rem 1.1rem;
+    background: var(--bg-soft);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    overflow-x: auto;
+    line-height: 1.5;
+    tab-size: 4;
+}
+
+/* 4.8 · Tabelle – schlicht, nur horizontale Linien (Tufte); Versal-Ziffern */
+.prose table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.6rem 0;
+    font-family: var(--font-body);   /* Versal-Ziffern für tabellarische Daten */
+    font-size: 1.1rem;
+    line-height: 1.5;
+    border-top: 1.5px solid var(--meta);
+    border-bottom: 1.5px solid var(--meta);
+}
+.prose th, .prose td {
+    padding: .5rem .8rem;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid var(--rule);
+}
+.prose tbody tr:last-child td { border-bottom: 0; }
+.prose thead th {
+    font-family: var(--font-ui);
+    font-weight: 600;
+    font-size: .95rem;
+    letter-spacing: var(--track-ui);
+    color: var(--meta);
+    border-bottom: 1.5px solid var(--meta);
+}
+/* Zahlen-Zellen: rechtsbündig + tabellarisch */
+.prose td.num, .prose th.num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+/* 4.9 · Quellen-Sidenotes (nummeriert, Tufte-Stil)
+   Schmal: per Ziffer aufklappbar · ab 1300px in die rechte Marginalspalte. */
+.prose { counter-reset: sidenote; }
+
+.sn-num {                                   /* Verweisziffer im Fliesstext – hochgestellte Mediäval-Ziffer */
+    counter-increment: sidenote;
+    font-family: var(--font-read);
+    font-variant-numeric: oldstyle-nums;
+    font-feature-settings: "onum" 1;
+    font-size: .72em;
+    vertical-align: super;
+    line-height: 0;
+    color: var(--accent);
+    background: none; border: 0; padding: 0; margin: 0 .03em;   /* Button-Reset im Fliesstext */
+    cursor: pointer;
+}
+.sn-num::before { content: counter(sidenote); }
+.sn-num:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+
+.sidenote {
+    display: block;
+    margin: .7rem 0;
+    padding-left: .9rem;
+    border-left: 2px solid var(--rule);
+    font-family: var(--font-ui);
+    font-size: .9rem;
+    line-height: 1.45;
+    color: var(--meta);
+}
+.sidenote a { color: inherit; }
+.sidenote::before {                         /* hochgestellte Mediäval-Ziffer vor der Notiz */
+    content: counter(sidenote);
+    font-family: var(--font-read);
+    font-variant-numeric: oldstyle-nums;
+    font-feature-settings: "onum" 1;
+    font-size: .72em; vertical-align: super; line-height: 0;
+    color: var(--accent); margin-right: .35em;
+}
+
+/* Schmale Screens: Notiz standardmässig eingeklappt, per Ziffer auf-/zuklappbar (Tufte-Mobile) */
+@media (max-width: 1299px) {
+    .sidenote { display: none; }
+    .sidenote.show { display: block; }
+}
+
+/* Breite Screens: Notizen wandern in die freie rechte Marginalspalte */
+@media (min-width: 1300px) {
+    .sidenote {
+        float: right;
+        clear: right;
+        width: 12rem;
+        margin: .2rem 0 .6rem;
+        margin-right: -13.5rem;             /* 12rem Breite + 1.5rem Abstand in den Rand */
+        padding-left: 0;
+        border-left: 0;
+    }
+    /* Sidenotes in Inhalts-Boxen floaten relativ zur Box → um deren rechtes
+       Padding (+Rand) eingerückt. Hier ausgleichen, damit alle Quellenangaben
+       bündig in der Marginalspalte stehen. */
+    .rec-quote .sidenote { margin-right: calc(-13.5rem - 1.4rem); }
+    .infobox .sidenote   { margin-right: calc(-13.5rem - 1.3rem - 1px); }
+    .reflection .sidenote,
+    .crisis .sidenote    { margin-right: calc(-13.5rem - 1.4rem - 1px); }
+}
+
+
+/* ==========================================================================
+   5 · App-Shell
+   --------------------------------------------------------------------------
+   Struktur:
+     .app                Flex-Container (Sidebar + Inhaltsspalte)
+       .sidebar          Navigation – mobil als Drawer, ab 900px fest
+       .scrim            abdunkelndes Overlay hinter dem offenen Drawer
+       .main-col         Topbar + scrollender Inhalt
+   ========================================================================== */
+
+/* 5.0 · Skip-Link (Tastatur / Screenreader) */
+.skip-link {
+    position: fixed;
+    top: .5rem; left: .5rem;
+    z-index: 200;
+    padding: .5rem .9rem;
+    background: var(--text);
+    color: var(--bg);
+    font-family: var(--font-ui);
+    font-size: var(--fs-small);
+    border-radius: var(--radius);
+    transform: translateY(-150%);
+    transition: transform .15s;
+}
+.skip-link:focus { transform: none; }
+
+/* 5.1 · Grundgerüst */
+.app {
+    display: flex;
+    align-items: flex-start;
+    min-height: 100vh;
+}
+.main-col {
+    flex: 1;
+    min-width: 0;            /* erlaubt Schrumpfen statt Überlauf */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* 5.2 · Sidebar
+   Mobil: festes Off-Canvas-Panel, per .open eingeblendet.
+   Desktop (>=900px, siehe 5.6): statisch, sticky, immer sichtbar. */
+.sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 120;
+    width: min(86vw, 320px);
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-soft);
+    border-right: var(--rule-w) solid var(--rule);
+    transform: translateX(-100%);
+    transition: transform .25s ease;
+    overflow: hidden;            /* nur die Nav scrollt (s. .sidebar__nav); Marke oben, Footer unten bleiben fix */
+    overscroll-behavior: contain;
+}
+.sidebar.open { transform: none; }
+
+.sidebar__brand {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    height: var(--topbar-h);
+    padding: 0 1rem;
+    flex-shrink: 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.15rem;
+    color: var(--text);
+    text-decoration: none;
+    border-bottom: var(--rule-w) solid var(--rule);
+}
+.sidebar__brand .mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px; height: 30px;
+    flex-shrink: 0;
+    border: 1.5px solid var(--text);
+    border-radius: var(--radius);
+    font-size: 1.05rem;
+}
+
+.sidebar__nav {
+    flex: 1;
+    min-height: 0;               /* erlaubt Schrumpfen unter Inhaltshöhe → eigener Scroll */
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 1rem .6rem 2rem;
+}
+.sidebar__footer {
+    flex-shrink: 0;
+    display: flex;
+    gap: .25rem;
+    padding: .5rem .6rem;
+    border-top: var(--rule-w) solid var(--rule);
+}
+.nav-group { margin-bottom: 1.4rem; }
+.nav-group__label {
+    padding: 0 .6rem;
+    margin: 0 0 .35rem;
+    font-family: var(--font-ui);
+    font-size: var(--fs-micro);
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--meta);
+}
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: .65rem;
+    min-height: 40px;
+    padding: .4rem .6rem;
+    border-radius: var(--radius);
+    font-family: var(--font-ui);
+    font-size: var(--fs-ui);
+    letter-spacing: var(--track-ui);
+    color: var(--text);
+    text-decoration: none;
+}
+.nav-link:hover { background: var(--bg-sink); }
+.nav-link[aria-current="page"] {
+    background: var(--accent-bg);
+    color: var(--accent);
+    font-weight: 600;
+}
+.nav-link .ico {
+    width: 18px; height: 18px;
+    flex-shrink: 0;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* 5.3 · Scrim (nur mobil, hinter offenem Drawer) */
+.scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 110;
+    background: rgba(0,0,0,.4);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .25s, visibility .25s;
+}
+.scrim.show { opacity: 1; visibility: visible; }
+
+/* 5.4 · Topbar */
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 80;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    height: var(--topbar-h);
+    padding: 0 var(--gap);   /* gleiches H-Padding wie .content → Breadcrumb fluchtet mit dem Titel */
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    border-bottom: var(--rule-w) solid var(--rule);
+}
+.icon-btn {
+    width: 44px; height: 44px;          /* WCAG 2.5.5 / HIG: Mindest-Touch-Target */
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 0;
+    border-radius: var(--radius);
+    color: var(--meta);
+    cursor: pointer;
+}
+.icon-btn:hover { background: var(--bg-sink); color: var(--text); }
+.icon-btn svg {
+    width: 20px; height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.icon-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+/* Sprach-Button (zeigt das aktuelle Kürzel, z. B. „DE") */
+.lang-btn {
+    width: auto; min-width: 44px;
+    padding: 0 .6rem;
+    font-family: var(--font-ui);
+    font-size: var(--fs-small);
+    font-weight: 600;
+    letter-spacing: .04em;
+}
+.lang-code {
+    font-family: var(--font-ui);
+    font-size: .78rem;
+    letter-spacing: .04em;
+    color: var(--meta);
+}
+
+/* Sprach-Menü (von app.js erzeugt, an <body> gehängt) */
+.lang-menu {
+    position: fixed;
+    z-index: 90;
+    min-width: 12rem;
+    max-height: 70vh;
+    overflow: auto;
+    padding: .35rem;
+    background: var(--bg);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    box-shadow: 0 8px 28px rgba(0,0,0,.16);
+}
+.lang-menu[hidden] { display: none; }
+.lang-menu button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    width: 100%;
+    min-height: 40px;
+    padding: .45rem .7rem;
+    background: transparent;
+    border: 0;
+    border-radius: 4px;
+    font-family: var(--font-ui);
+    font-size: var(--fs-small);
+    color: var(--text);
+    text-align: left;
+    cursor: pointer;
+}
+.lang-menu button:hover { background: var(--bg-sink); }
+.lang-menu button[aria-checked="true"] { color: var(--accent-text); font-weight: 600; }
+.lang-menu button[aria-checked="true"] .lang-code { color: var(--accent-text); }
+
+.crumbs {
+    flex: 1;
+    min-width: 0;
+    font-family: var(--font-ui);
+    font-size: var(--fs-small);
+    letter-spacing: var(--track-ui);
+    color: var(--meta);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.crumbs ol { display: flex; align-items: center; gap: .15rem; margin: 0; padding: 0; list-style: none; }
+.crumbs li { display: inline-flex; align-items: center; min-width: 0; }
+.crumbs li:not(:last-child)::after { content: "›"; color: var(--rule); margin: 0 .4rem; }
+.crumbs a { color: inherit; text-decoration: none; }
+.crumbs a:hover { color: var(--text); }
+.crumbs li:last-child { color: var(--text); overflow: hidden; text-overflow: ellipsis; }
+/* Mobil: nur die aktuelle Seite (voller Pfad würde gedrängt) – ab 900px wieder vollständig (5.6) */
+.crumbs li:not(:last-child) { display: none; }
+
+.topbar__actions { display: flex; align-items: center; gap: .1rem; }
+
+/* 5.5 · Inhaltsbereich + Lesespalte */
+.content {
+    flex: 1;
+    padding: var(--gap);
+}
+.prose {                       /* Lesespalte – linksbündig; rechts bleibt Marginalspalte frei */
+    max-width: var(--reading-max);
+    font-family: var(--font-read);   /* Lauftext mit Mediäval-Ziffern */
+}
+.content--wide .prose {        /* breite Variante für Tools / Übersichten */
+    max-width: var(--content-max);
+}
+
+/* 5.6 · Desktop – feste Sidebar ab 900px */
+@media (min-width: 900px) {
+    .sidebar {
+        position: sticky;
+        top: 0;
+        transform: none;
+        width: var(--sidebar-w);
+        flex-shrink: 0;
+        height: 100vh;
+    }
+    .scrim { display: none; }
+    .topbar__menu { display: none; }            /* Hamburger nur mobil */
+    .crumbs li:not(:last-child) { display: inline-flex; }   /* voller Pfad ab Desktop */
+}
+
+/* 5.7 · Lesemodus – blendet Navigation & Topbar-Chrome aus, zentriert den Text.
+   Es bleibt nur ein dezent schwebendes Augen-Icon (.read-toggle) zum Beenden. */
+body.reading .sidebar,
+body.reading .scrim { display: none; }
+
+body.reading .topbar {
+    position: fixed;
+    top: 0; right: 0; left: auto;
+    width: auto; height: auto;
+    padding: .5rem .6rem;
+    background: transparent;
+    border-bottom: 0;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    pointer-events: none;                /* Klicks gehen an den Text, außer auf den Button */
+}
+body.reading .topbar__menu,
+body.reading .crumbs,
+body.reading .topbar__actions > *:not(.read-toggle) { display: none; }
+body.reading .read-toggle {
+    pointer-events: auto;
+    background: transparent;
+    color: var(--text);                  /* klares, neutrales Schließen-Kreuz */
+}
+body.reading .read-toggle:hover { background: var(--bg-sink); }
+body.reading .read-toggle svg { width: 22px; height: 22px; }
+body.reading .prose { margin-inline: auto; }   /* Lesespalte zentriert */
+
+.read-toggle[aria-pressed="true"] { color: var(--accent); }
+
+/* 5.8 · Reading-Progress – sehr dünner Balken ganz oben (nur Leseseiten, via app.js) */
+.read-progress {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    z-index: 130;          /* über Sidebar (120) – sonst links verdeckt */
+    pointer-events: none;
+}
+.read-progress > span {
+    display: block;
+    height: 100%;
+    width: 0;
+    background: var(--accent);
+    transition: width .1s linear;
+}
+
+/* 5.9 · Sidebar – Unterebene (ausklappbar) */
+.nav-row { display: flex; align-items: center; }
+.nav-row .nav-link { flex: 1; }
+.nav-toggle {
+    flex-shrink: 0;
+    width: 34px; height: 40px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: transparent; border: 0; border-radius: var(--radius);
+    color: var(--meta); cursor: pointer;
+}
+.nav-toggle:hover { background: var(--bg-sink); color: var(--text); }
+.nav-toggle svg {
+    width: 16px; height: 16px;
+    fill: none; stroke: currentColor; stroke-width: 1.7;
+    stroke-linecap: round; stroke-linejoin: round;
+    transition: transform .15s;
+}
+.nav-parent.open .nav-toggle svg { transform: rotate(90deg); }
+.nav-sub { display: none; padding-left: 2.4rem; margin-bottom: .3rem; }
+.nav-parent.open .nav-sub { display: block; }
+.nav-sublink {
+    display: block;
+    min-height: 34px;
+    padding: .35rem .6rem;
+    border-radius: var(--radius);
+    font-family: var(--font-ui);
+    font-size: 1rem;
+    line-height: 1.3;
+    color: var(--meta);
+    text-decoration: none;
+}
+.nav-sublink:hover { background: var(--bg-sink); color: var(--text); }
+.nav-sublink[aria-current="page"] { color: var(--accent); font-weight: 600; }
+
+
+/* ==========================================================================
+   6 · Komponenten
+   ========================================================================== */
+
+/* 6.1 · Seiten-Container für App-Seiten (breiter als die Lesespalte) */
+.page { max-width: var(--content-max); }
+.page__intro {                              /* Einleitungstext: ruhige Lesebreite, Textfarbe wie Fließtext */
+    max-width: var(--reading-max);
+    font-family: var(--font-read);
+    margin: 0 0 1.6rem;
+}
+.page__updated {                            /* dezente «Stand»-Fusszeile der Übersicht (aus last_updated) */
+    font-family: var(--font-ui);
+    font-size: .85rem;
+    color: var(--meta);
+    margin: 2.2rem 0 0;
+}
+/* D4 · Sektionstitel auf App-Seiten: ruhiges Gill-Sans-Label statt großer Serife.
+   (Artikel-Überschriften in .prose bleiben Playfair – nur direkte .page-Sektionen.) */
+.page > h2 {
+    font-family: var(--font-ui);
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--meta);
+    margin: 2.2rem 0 .8rem;
+}
+
+/* 6.2 · Karten-Raster */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+    gap: 1rem;
+    margin: 1.6rem 0;
+}
+
+/* 6.3 · Karte */
+.card {
+    display: flex;
+    flex-direction: column;
+    gap: .35rem;
+    padding: 1.1rem 1.2rem;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    background: var(--bg);
+    color: inherit;
+    text-decoration: none;
+    transition: border-color .15s, background .15s, transform .15s;
+}
+.card:hover {
+    border-color: var(--accent);
+    background: var(--bg-soft);
+    transform: translateY(-2px);
+}
+.card:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+.card__eyebrow {
+    font-family: var(--font-ui);
+    font-size: var(--fs-micro);
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--meta);
+}
+.card h3 {
+    margin: 0;
+    font-size: 1.3rem;
+    line-height: 1.2;
+}
+.card p {
+    margin: 0;
+    font-family: var(--font-ui);
+    font-size: 1rem;
+    line-height: 1.45;
+    color: var(--meta);
+}
+.card__more {
+    margin-top: .5rem;
+    font-family: var(--font-ui);
+    font-size: .95rem;
+    letter-spacing: var(--track-ui);
+    color: var(--accent-text);
+}
+.card__more::after { content: " →"; }
+
+/* 6.4 · Feature-Karte (z. B. „Weitermachen") – breit, horizontal, weicher Grund */
+.card--feature {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    background: var(--bg-soft);
+}
+.card--feature .card__body { display: flex; flex-direction: column; gap: .25rem; }
+.card--feature h3 { font-size: 1.5rem; }
+.card--feature .card__more { margin-top: 0; white-space: nowrap; }
+@media (max-width: 600px) {
+    .card--feature { flex-direction: column; align-items: flex-start; gap: .6rem; }
+}
+
+/* 6.5 · Übungs-Container */
+.exercise {
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    padding: clamp(1.2rem, 3vw, 1.8rem);
+    margin: 1.6rem 0;
+}
+.exercise__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem 2rem;
+}
+@media (min-width: 720px) {
+    .exercise__grid { grid-template-columns: 1fr 1fr; }   /* breit: zweispaltig */
+}
+.exercise__q {
+    font-family: var(--font-read);
+    font-size: 1.3rem;
+    line-height: 1.4;
+    margin: 0 0 1rem;
+}
+
+/* 6.6 · Skala (Slider) + Live-Anzeige */
+.readout { display: flex; align-items: baseline; gap: .6rem; margin-bottom: .9rem; }
+.readout__value {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 3rem;
+    line-height: 1;
+    color: var(--accent);
+}
+.readout__label { font-family: var(--font-ui); font-size: 1.1rem; color: var(--meta); }
+
+.scale input[type="range"] {
+    -webkit-appearance: none; appearance: none;
+    width: 100%; height: 6px; margin: .4rem 0;
+    border-radius: 3px;
+    background: var(--rule);
+    outline: none; cursor: pointer;
+}
+.scale input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--accent);
+    border: 3px solid var(--bg);
+    box-shadow: 0 0 0 1px var(--accent);
+    cursor: grab;
+}
+.scale input[type="range"]::-moz-range-thumb {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--accent); border: 3px solid var(--bg); cursor: grab;
+}
+.scale input[type="range"]:focus-visible { box-shadow: 0 0 0 3px var(--accent-bg); }
+.scale__labels {
+    display: flex; justify-content: space-between;
+    font-family: var(--font-ui); font-size: .9rem; color: var(--meta);
+    margin-top: .3rem;
+}
+
+/* 6.7 · Formularfelder */
+.field { margin: 0 0 1rem; }
+.field > label {
+    display: block; margin-bottom: .4rem;
+    font-family: var(--font-ui); font-size: .95rem; letter-spacing: var(--track-ui);
+    color: var(--meta);
+}
+.field textarea, .field input[type="text"] {
+    width: 100%; box-sizing: border-box;
+    font-family: var(--font-read); font-size: 1.2rem; line-height: 1.6;
+    padding: .7rem .9rem;
+    border: 1px solid var(--meta); border-radius: var(--radius);   /* ≥3:1 Rahmenkontrast (WCAG 1.4.11) */
+    background: var(--bg); color: inherit;
+    resize: vertical;
+}
+.field textarea:focus, .field input[type="text"]:focus {
+    outline: none; border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-bg);
+}
+
+/* 6.8 · Buttons */
+.btn {
+    display: inline-flex; align-items: center; gap: .4rem;
+    font-family: var(--font-ui); font-size: 1rem; letter-spacing: var(--track-ui);
+    padding: .55rem 1.2rem;
+    border: 1px solid var(--accent); border-radius: var(--radius);
+    background: var(--accent); color: var(--bg);
+    cursor: pointer; text-decoration: none;
+}
+.btn:hover { background: color-mix(in srgb, var(--accent) 85%, #000); }
+.btn--ghost { background: transparent; color: var(--accent-text); }
+.btn--ghost:hover { background: var(--accent-bg); }
+
+/* Bestätigungs-Status neben Buttons (z. B. „Gespeichert ✓") */
+.save-status {
+    font-family: var(--font-ui);
+    font-size: .95rem;
+    color: var(--accent);
+    margin-left: .6rem;
+}
+
+
+/* ==========================================================================
+   7 · Fokus & Hilfsklassen
+   ========================================================================== */
+
+/* Konsistenter Tastatur-Fokus-Ring für alle interaktiven Elemente.
+   :where() hält die Spezifität bei 0 → komponenten-eigene Fokus-Stile gewinnen. */
+:where(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 3px;
+}
+
+/* Reduzierte Bewegung respektieren (WCAG 2.3.3) */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+.visually-hidden {
+    position: absolute !important;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+
+/* ==========================================================================
+   8 · Content-Widgets (schema-basierte Lese-Kapitel)
+   ========================================================================== */
+
+/* 8.0 · Sprungmarken: nicht unter die Topbar rutschen */
+.prose h2[id], .prose h3[id] { scroll-margin-top: 64px; }
+
+/* 8.2 · Pull – Schlüsselsatz */
+.prose .pull {
+    font-family: var(--font-read);
+    font-style: italic;
+    font-size: 1.55rem;
+    line-height: 1.4;
+    border-left: 3px solid var(--accent);
+    padding-left: 1.2rem;
+    margin: 2rem 0;
+}
+
+/* 8.3 · Quellen als Sidenotes — siehe Abschnitt 4.9 (.sn-num / .sidenote, Tufte-Stil) */
+
+/* 8.4 · Info-Box (Typ-Varianten via data-type) */
+.infobox {
+    margin: 1.6rem 0;
+    padding: 1.1rem 1.3rem;
+    background: var(--bg-soft);
+    border: 1px solid var(--rule);
+    border-left: 4px solid var(--accent);
+    border-radius: var(--radius);
+}
+.infobox__kicker { font-family: var(--font-ui); font-size: var(--fs-micro); font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--meta); margin: 0 0 .35rem; }
+.infobox h4 { margin: 0 0 .5rem; font-family: var(--font-display); font-weight: 700; font-size: 1.25rem; line-height: 1.2; }
+.infobox p { font-size: 1.15rem; }
+.infobox p:last-child { margin-bottom: 0; }
+/* Entscheid: ruhig-einheitlicher Akzent-Rand für alle Info-Typen –
+   die Differenzierung läuft über das Kicker-Label, nicht über Farbe. */
+
+/* 8.5 · Zitat + eigene Übertragung */
+.rec-quote {
+    margin: 1.6rem 0;
+    padding: 1.2rem 1.4rem;
+    background: var(--accent-bg);
+    border-radius: var(--radius);
+    font-style: italic;
+    font-size: 1.3rem; line-height: 1.55;
+}
+.rec-quote p { margin: 0; }
+.rec-quote__author {
+    display: block; margin-top: .7rem;
+    font-style: normal; font-family: var(--font-ui);
+    font-size: 1rem; color: var(--meta);
+}
+.quote-translation {
+    margin: .4rem 0 1.6rem;
+    padding-left: 1.2rem;
+    border-left: 2px solid var(--rule);
+    font-size: 1.18rem; line-height: 1.55;
+}
+.quote-translation__kicker { display: block; font-family: var(--font-ui); font-size: .78rem; text-transform: uppercase; letter-spacing: .05em; color: var(--meta); margin-bottom: .3rem; }
+
+/* 8.6 · Reflexion (lokal gespeichert) */
+.reflection {
+    margin: 1.8rem 0;
+    padding: 1.2rem 1.4rem;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+}
+.reflection__kicker { font-family: var(--font-ui); font-size: var(--fs-micro); font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--accent-text); margin: 0 0 .3rem; }
+.reflection h4 { margin: 0 0 .3rem; font-family: var(--font-display); font-weight: 700; font-size: 1.2rem; }
+.reflection__intro { font-style: italic; color: var(--meta); margin: .2rem 0 .8rem; }
+.reflection__item { margin: 1rem 0; }
+.reflection__q { font-family: var(--font-read); margin: 0 0 .4rem; }
+.reflection textarea {
+    width: 100%; box-sizing: border-box; min-height: 3.2rem;
+    font-family: var(--font-read); font-size: 1.1rem; line-height: 1.5;
+    padding: .5rem .7rem;
+    border: 1px solid var(--meta); border-radius: var(--radius);
+    background: var(--bg); color: inherit; resize: vertical;
+}
+.reflection textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-bg); }
+.reflection__note { font-family: var(--font-ui); font-size: .85rem; color: var(--meta); margin-top: .7rem; }
+
+/* 8.7 · Krise / Notruf */
+.crisis {
+    margin: 1.8rem 0;
+    padding: 1.2rem 1.4rem;
+    background: var(--bg-soft);
+    border: 1px solid var(--rule);
+    border-left: 4px solid #c2792e;
+    border-radius: var(--radius);
+}
+.crisis__kicker { font-family: var(--font-ui); font-size: var(--fs-micro); font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: #b06a4f; margin: 0 0 .35rem; }
+.crisis h4 { margin: 0 0 .6rem; font-family: var(--font-display); font-weight: 700; font-size: 1.25rem; }
+.helpline { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; padding: .6rem 0; border-bottom: 1px solid var(--rule); }
+.helpline:last-of-type { border-bottom: 0; }
+.helpline__name { font-family: var(--font-ui); }
+.helpline__cov { display: block; font-size: .85rem; color: var(--meta); }
+.helpline__num { font-family: var(--font-ui); font-weight: 700; font-size: 1.3rem; color: var(--accent-text); text-decoration: none; white-space: nowrap; }
+.helpline__num:hover { text-decoration: underline; }
+.crisis__more { margin-top: 1rem; }
+.crisis__more summary { font-family: var(--font-ui); font-size: 1rem; color: var(--meta); cursor: pointer; }
+
+/* 8.9 · Lesemodi: Standard (short) · Einfach (easy) · Ausführlich (full) */
+/* Segmentierter Umschalter */
+.reading-controls { display: inline-block; margin: 0 0 1rem; }
+.chapter-view .reading-controls { margin-top: -1.5rem; }   /* kompakt, nah an den Seitenanfang */
+.mode-cycle {
+    display: inline-flex; align-items: center; gap: .4rem;
+    font-family: var(--font-ui); font-size: .78rem; letter-spacing: var(--track-ui);
+    padding: .26rem .85rem;
+    border: 1px solid var(--rule); border-radius: 999px;
+    background: transparent; color: var(--text); cursor: pointer;
+}
+.mode-cycle:hover { border-color: var(--accent); }
+.mode-cycle__pre { color: var(--meta); }
+.mode-cycle__val { font-weight: 600; }
+.mode-cycle__ic { color: var(--accent-text); }
+
+/* Sichtbarkeit der modusspezifischen Varianten */
+/* .easy / .standard sind die Modus-Gruppen (sichtbar nur im jeweiligen Modus) */
+.easy, .standard-prose { margin: 1.4rem 0; }
+.prose > .mode-note { display: none; }
+/* Ausführlich: easy/standard-Varianten und Hinweise ausblenden */
+.prose:not(.is-easy):not(.is-standard) > .easy,
+.prose:not(.is-easy):not(.is-standard) > .standard { display: none; }
+/* Einfach: nur Struktur + .easy (bzw. Hinweis, wenn keine einfache Fassung) */
+.prose.is-easy > :not(h1):not(.reading-controls):not(.chapter-pager):not(.easy):not(.mode-note--easy) { display: none; }
+.prose.is-easy > .mode-note--easy { display: block; }
+/* Standard: nur Struktur + .standard (bzw. Hinweis, wenn keine Standard-Fassung) */
+.prose.is-standard > :not(h1):not(.reading-controls):not(.chapter-pager):not(.standard):not(.mode-note--standard) { display: none; }
+.prose.is-standard > .mode-note--standard { display: block; }
+
+.mode-note { font-family: var(--font-ui); color: var(--meta); margin: 1.6rem 0; }
+.mode-note__btn { font: inherit; color: var(--accent-text); background: none; border: 0; padding: 0; text-decoration: underline; cursor: pointer; }
+
+/* 8.10 · Quiz (Selbsttest) */
+.quiz { margin: 1.8rem 0; padding: 1.2rem 1.4rem; border: 1px solid var(--rule); border-radius: var(--radius); background: var(--bg-soft); }
+.quiz__kicker { font-family: var(--font-ui); font-size: .82rem; text-transform: uppercase; letter-spacing: .05em; color: var(--accent-text); margin: 0 0 1rem; }
+.quiz-q { border: 0; padding: 0; margin: 0 0 1.6rem; min-inline-size: 0; }
+.quiz-q:last-child { margin-bottom: 0; }
+.quiz-q__q { font-family: var(--font-read); font-size: 1.15rem; line-height: 1.4; padding: 0; margin: 0 0 .7rem; }
+.quiz-opts { display: flex; flex-direction: column; gap: .5rem; }
+.quiz-opt {
+    font-family: var(--font-ui); font-size: 1.05rem; text-align: left;
+    padding: .6rem .9rem;
+    border: 1px solid var(--rule); border-radius: var(--radius);
+    background: var(--bg); color: var(--text); cursor: pointer;
+}
+.quiz-opt:hover { border-color: var(--accent); }
+.quiz-opt.selected { border-color: var(--accent); background: var(--accent-bg); }
+.quiz-q.answered .quiz-opt { cursor: default; }
+.quiz-opt.is-correct { border-color: #4a7a55; background: color-mix(in srgb, #4a7a55 16%, transparent); }
+.quiz-opt.is-wrong { border-color: #b06a4f; background: color-mix(in srgb, #b06a4f 16%, transparent); }
+.quiz-check {
+    align-self: flex-start; margin-top: .7rem;
+    font-family: var(--font-ui); font-size: 1rem; letter-spacing: var(--track-ui);
+    padding: .45rem 1.1rem; border: 1px solid var(--accent); border-radius: 999px;
+    background: var(--accent); color: var(--bg); cursor: pointer;
+}
+.quiz-feedback { margin: .8rem 0 0; font-family: var(--font-ui); font-size: 1rem; font-style: italic; color: var(--meta); }
+
+/* 8.11 · Lernkarten (Flashcards) */
+.flashcards { margin: 1.8rem 0; }
+.fc__kicker { font-family: var(--font-ui); font-size: .82rem; text-transform: uppercase; letter-spacing: .05em; color: var(--accent-text); margin: 0 0 .8rem; }
+.fc-deck { perspective: 1200px; }
+.fc-card {
+    position: relative; min-height: 9.5rem;
+    transform-style: preserve-3d; transition: transform .45s ease;
+    cursor: pointer;
+}
+.fc-card.is-flipped { transform: rotateY(180deg); }
+.fc-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.fc-card__face {
+    position: absolute; inset: 0; backface-visibility: hidden;
+    display: flex; align-items: center; justify-content: center; text-align: center;
+    padding: 1.4rem; overflow: auto;
+    border: 1px solid var(--rule); border-radius: var(--radius); background: var(--bg-soft);
+}
+.fc-card__front { font-family: var(--font-display); font-weight: 700; font-size: 1.45rem; line-height: 1.25; }
+.fc-card__back { font-family: var(--font-ui); font-size: 1.05rem; line-height: 1.5; color: var(--text); transform: rotateY(180deg); }
+.fc-card__tag {                             /* Kategorie-Tag-Komponente (dokumentiert in design-system; aktuell kein Auto-Emitter im Content) */
+    position: absolute; top: .5rem; left: .5rem;
+    font-family: var(--font-ui); font-size: .68rem; letter-spacing: .04em; text-transform: uppercase;
+    color: var(--meta); background: var(--bg); border: 1px solid var(--rule);
+    border-radius: 999px; padding: .1rem .5rem;
+}
+.fc-nav { display: flex; align-items: center; justify-content: center; gap: 1.4rem; margin-top: .9rem; }
+.fc-nav button {
+    font-family: var(--font-ui); font-variant-ligatures: none;
+    font-size: 1.5rem; line-height: 1; width: 2.4rem; height: 2.4rem;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid var(--rule); border-radius: 999px;
+    background: transparent; color: var(--text); cursor: pointer;
+}
+.fc-nav button:hover { border-color: var(--accent); }
+.fc-count { font-family: var(--font-ui); font-size: .95rem; color: var(--meta); min-width: 4rem; text-align: center; }
+
+/* 8.12 · Kapitel-Reader — Pager (Übersicht nutzt .card-grid/.card aus Abschnitt 6) */
+
+/* Pager */
+.chapter-pager { clear: both; display: flex; gap: 1rem; margin: 3rem 0 0; padding-top: 1.4rem; border-top: 1px solid var(--rule); }
+.chapter-pager__link {
+    flex: 1 1 0; display: flex; flex-direction: column; gap: .25rem;
+    padding: .9rem 1.1rem; border: 1px solid var(--rule); border-radius: var(--radius);
+    text-decoration: none; color: var(--text);
+}
+.chapter-pager__link:hover { border-color: var(--accent); }
+.chapter-pager__next { text-align: right; }
+.chapter-pager__dir { font-family: var(--font-ui); font-size: .85rem; text-transform: uppercase; letter-spacing: .05em; color: var(--accent-text); }
+.chapter-pager__title { font-family: var(--font-read); font-size: 1.05rem; line-height: 1.3; }
+@media (max-width: 520px) {
+    .chapter-pager { flex-direction: column; }
+    .chapter-pager__next { text-align: left; }
+}
+
+/* =========================================================================
+   9 · NAV-Platzhalter (deaktiviert) + Modale (Onboarding/Hilfe · Einstellungen)
+   ========================================================================= */
+.nav-link.is-disabled, .nav-sublink.is-disabled { color: var(--meta); cursor: default; opacity: .75; }
+.nav-link.is-disabled { display: flex; align-items: center; }
+.nav-link.is-disabled:hover, .nav-sublink.is-disabled:hover { background: none; color: var(--meta); }
+.nav-wip {
+    margin-left: auto; font-family: var(--font-ui); font-size: .68rem; letter-spacing: .03em;
+    color: var(--meta); border: 1px solid var(--rule); border-radius: 999px; padding: 0 .4rem;
+}
+.nav-sublink.is-disabled .nav-wip { margin-left: .5rem; }
+
+.modal-scrim {
+    position: fixed; inset: 0; z-index: 200;
+    background: color-mix(in srgb, var(--text) 38%, transparent);
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+    opacity: 0; transition: opacity .25s ease;
+}
+.modal-scrim.show { opacity: 1; }
+.modal-scrim[hidden] { display: none; }
+
+.modal-card {
+    position: fixed; z-index: 201; left: 50%; top: 50%;
+    transform: translate(-50%, calc(-50% + 8px));
+    width: min(34rem, calc(100vw - 2rem)); max-height: calc(100dvh - 2rem); overflow: auto;
+    background: var(--bg); color: var(--text);
+    border: 1px solid var(--rule); border-radius: var(--radius);
+    box-shadow: 0 12px 40px color-mix(in srgb, var(--text) 22%, transparent);
+    padding: clamp(1.3rem, 4vw, 1.9rem);
+    opacity: 0; transition: opacity .25s ease, transform .25s ease;
+}
+.modal-card.show { opacity: 1; transform: translate(-50%, -50%); }
+.modal-card[hidden] { display: none; }
+.modal-card__close { position: absolute; top: .6rem; right: .6rem; }
+.modal-eyebrow {
+    font-family: var(--font-ui); font-size: var(--fs-micro); font-weight: 600;
+    letter-spacing: .08em; text-transform: uppercase; color: var(--meta); margin: 0 0 .25rem;
+}
+.modal-card h2 { font-family: var(--font-display); margin: 0 0 .5rem; font-size: var(--fs-h2); line-height: var(--lh-h2); }
+.modal-lead { font-family: var(--font-read); font-size: 1.12rem; line-height: 1.55; margin: 0 0 1.2rem; }
+.modal-actions { display: flex; flex-wrap: wrap; gap: .6rem; justify-content: flex-end; margin-top: 1.4rem; }
+
+/* Onboarding-Legende + Status */
+.ob-section-label {
+    font-family: var(--font-ui); font-size: .82rem; font-weight: 600;
+    letter-spacing: .08em; text-transform: uppercase; color: var(--meta); margin: 1.3rem 0 .5rem;
+}
+.ob-legend { list-style: none; margin: 0 0 .4rem; padding: 0; display: grid; gap: .55rem; }
+.ob-legend li { display: grid; grid-template-columns: 1.9rem 1fr; align-items: start; gap: .7rem; }
+.ob-ico {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 1.9rem; height: 1.9rem; flex: none;
+    border: 1px solid var(--rule); border-radius: var(--radius);
+    color: var(--accent); background: var(--bg-soft);
+}
+.ob-ico svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.ob-de { font-family: var(--font-ui); font-size: .8rem; font-weight: 700; color: var(--accent); }
+.ob-legend b { font-family: var(--font-ui); font-size: 1.02rem; font-weight: 600; display: block; }
+.ob-legend li > span:last-child > span { font-family: var(--font-ui); font-size: .95rem; line-height: 1.4; color: var(--meta); }
+.soon { font-style: italic; color: var(--meta); }
+.ob-status {
+    margin: 1.1rem 0 .2rem; padding: .9rem 1rem;
+    background: var(--accent-bg); border: 1px solid var(--rule); border-radius: var(--radius);
+    font-family: var(--font-ui); font-size: .95rem; line-height: 1.45;
+}
+.ob-status p { margin: 0 0 .4rem; }
+.ob-status p:last-child { margin: 0; }
+.ob-status b { color: var(--accent-text); }
+
+/* Einstellungen */
+.seg { display: inline-flex; border: 1px solid var(--rule); border-radius: var(--radius); overflow: hidden; }
+.seg button {
+    font-family: var(--font-ui); font-size: .95rem; padding: .45rem .9rem;
+    background: var(--bg); color: var(--text); border: 0; border-right: 1px solid var(--rule); cursor: pointer;
+}
+.seg button:last-child { border-right: 0; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-text); }
+.settings-hint { font-family: var(--font-ui); font-size: .92rem; line-height: 1.5; color: var(--meta); margin: 0 0 .7rem; }
+.settings-danger { display: flex; flex-direction: column; gap: .7rem; align-items: flex-start; }
+.settings-confirm { display: flex; flex-direction: column; gap: .5rem; font-family: var(--font-ui); font-size: .95rem; }
+.settings-confirm[hidden] { display: none; }
+.settings-confirm__row { display: flex; gap: .6rem; }
+
+@media (prefers-reduced-motion: reduce) {
+    .modal-scrim, .modal-card { transition: none; }
+    .modal-card { transform: translate(-50%, -50%); }
+}

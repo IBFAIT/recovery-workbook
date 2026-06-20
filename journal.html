@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Journal · RCZ App</title>
+    <link rel="stylesheet" href="app.css?v=3.25"/>
+    <script>try{var t=localStorage.getItem('rcz-theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
+    <style>
+        /* Journal-Einträge (seiten-spezifisch) */
+        .entry {
+            border-left: 3px solid var(--rule);
+            padding: .1rem 0 .1rem 1.1rem;
+            margin: 1.4rem 0;
+        }
+        .entry time {
+            display: block;
+            margin-bottom: .25rem;
+            font-family: var(--font-ui);
+            font-size: .82rem;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            color: var(--meta);
+        }
+        .entry p { margin: 0; }
+    </style>
+</head>
+<body data-nav="journal" data-crumb="Journal">
+
+<a class="skip-link" href="#main">Zum Inhalt springen</a>
+
+<main class="content" id="main">
+    <div class="page">
+        <h1>Journal</h1>
+        <p class="page__intro">Drei Zeilen genügen. Keine perfekten Sätze – nur ehrlich, nur für dich.</p>
+
+        <div class="field">
+            <label for="entry">Neuer Eintrag</label>
+            <textarea id="entry" rows="3" placeholder="Was beschäftigt dich heute?"></textarea>
+        </div>
+        <button type="button" class="btn" id="saveBtn">Eintrag speichern</button>
+        <span class="save-status" role="status" aria-live="polite"></span>
+
+        <h2>Frühere Einträge</h2>
+        <div id="entries" class="prose">
+            <article class="entry">
+                <time>Gestern</time>
+                <p>Heute den Spaziergang tatsächlich gemacht, obwohl der Anfang schwer war. Danach war der Kopf etwas klarer.</p>
+            </article>
+            <article class="entry">
+                <time>17. Juni</time>
+                <p>Ein zäher Tag. Aber ich habe das Glas Wasser am Morgen geschafft – kleiner Anker, der gehalten hat.</p>
+            </article>
+            <article class="entry">
+                <time>15. Juni</time>
+                <p>Mit M. telefoniert. Es tut gut, gehört zu werden, ohne gleich eine Lösung liefern zu müssen.</p>
+            </article>
+        </div>
+    </div>
+</main>
+
+<script src="app.js?v=3.25"></script>
+<script>
+(function () {
+    const btn = document.getElementById('saveBtn');
+    const ta = document.getElementById('entry');
+    const list = document.getElementById('entries');
+    const status = document.querySelector('.save-status');
+    btn.addEventListener('click', () => {
+        const txt = ta.value.trim();
+        if (!txt) { ta.focus(); return; }
+        const e = document.createElement('article');
+        e.className = 'entry';
+        const t = document.createElement('time'); t.textContent = 'Heute';
+        const p = document.createElement('p'); p.textContent = txt;
+        e.appendChild(t); e.appendChild(p);
+        list.prepend(e);
+        ta.value = '';
+        status.textContent = 'Gespeichert ✓';
+    });
+})();
+</script>
+</body>
+</html>

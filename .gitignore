@@ -1,0 +1,31 @@
+# ===== NICHT veröffentlichen (öffentliches GitHub-Pages-Repo) =====
+
+# Fremde, urheberrechtlich geschützte Quell-PDFs / Referenzmaterial
+Workbooks/
+
+# Interne Content-Dokumente: alle .md in content/ AUSSER den Sprach-Files der App
+content/*.md
+!content/Einleitung_Recovery_V3-11_*.md
+
+# Interne Dokumente / Reviews / Proposals im Root
+README.md
+ONBOARDING-PROPOSAL.md
+PROTOTYPE-TEST-READINESS.md
+UX-Review-100-Vorschlaege.md
+
+# Entwickler-Hilfen, alte Versionen, Vorschlags-/Referenz-Seiten (nicht Teil der App-Navigation)
+_archive/
+_mobile-preview.html
+_wide-preview.html
+design-system.html
+typografie.html
+onboarding-demo.html
+widget-verbesserungen.html
+widget-lesemodus-alternativen.html
+content-vermittlung-vorschlaege.html
+
+# Backups / Skripte / OS
+*.bak
+*.backup
+*.py
+.DS_Store
